@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ONE RUPEE - ONE HOPE</string>
+    <string name="title_activity_main">ONE RUPEE - ONE HOPE</string>
+    <string name="package_name">org.oneruhope.app</string>
+    <string name="custom_url_scheme">org.oneruhope.app</string>
+</resources>

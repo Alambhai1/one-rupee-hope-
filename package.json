@@ -1,0 +1,28 @@
+{
+  "name": "one-rupee-hope",
+  "version": "1.0.0",
+  "description": "ONE RUPEE – ONE HOPE | एक रुपया, एक उम्मीद. A global humanitarian initiative connecting people through unity, kindness and small contributions to create hope and positive change worldwide.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alambhai1/one-rupee-hope-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Alambhai1/one-rupee-hope-/issues"
+  },
+  "homepage": "https://github.com/Alambhai1/one-rupee-hope-#readme",
+  "dependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/core": "^8.6.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.2"
+  }
+}

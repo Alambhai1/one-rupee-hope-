@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#123b2a">
+<title>ONE RUPEE – ONE HOPE</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f7f4;color:#173326;font-family:Arial,sans-serif}
+main{max-width:520px;margin:auto;padding:18px}
+header{text-align:center;background:#123b2a;color:white;padding:28px 15px;border-radius:18px}
+h1{font-size:27px;margin:0}
+.card{background:white;padding:20px;margin-top:17px;border-radius:15px;box-shadow:0 3px 15px #0001}
+button{width:100%;padding:14px;border:0;border-radius:10px;background:#147a43;color:white;font-size:17px;margin-top:12px}
+input{width:100%;padding:14px;border:1px solid #bbb;border-radius:9px;font-size:18px;margin-top:8px}
+.amount{font-size:25px;color:#147a43;font-weight:bold}
+small{color:#65756b;line-height:1.7}
+#qrcode{display:flex;justify-content:center;margin:18px auto}
+#qrcode img,#qrcode canvas{max-width:100%;height:auto}
+.center{text-align:center}
+.notice{background:#fff6df;padding:12px;border-radius:9px;color:#76551b}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>ONE RUPEE – ONE HOPE</h1>
+<p>एक रुपया, एक उम्मीद</p>
+<p>एक निजी सहायता अपील</p>
+</header>
+
+<section class="card">
+<h2>मेरी विनम्र अपील</h2>
+<p>मैं आर्थिक कठिनाई से गुजर रहा हूँ। मेरी नियमित आमदनी नहीं है और मुझ पर निजी कर्ज़ है। यदि मेरी बात आपको सही लगे, तो अपनी इच्छा से ₹1 या उससे अधिक की सहायता कर सकते हैं।</p>
+<p>सहायता करना पूरी तरह आपकी मर्जी है। कोई दबाव नहीं है। सहायता न करने पर भी आपका सम्मान है।</p>
+</section>
+
+<section class="card center">
+<h2>वास्तविक प्राप्त सहायता</h2>
+<div class="amount">₹0</div>
+<small>यह राशि केवल वास्तविक प्राप्त और सत्यापित भुगतान के आधार पर अपडेट होगी।</small>
+</section>
+
+<section class="card">
+<h2>स्वैच्छिक सहायता करें</h2>
+<p>केवल भारत में INR के माध्यम से सहायता। अपनी इच्छानुसार राशि चुनें।</p>
+
+<label for="amount">सहायता राशि (₹)</label>
+<input id="amount" type="number" min="1" step="1" value="1">
+
+<p><small>UPI ID: 9992894530@yapl</small></p>
+
+<div id="qrcode"></div>
+
+<button onclick="payNow()">UPI से भुगतान करें</button>
+<button onclick="generateQR()" style="background:#315c48">QR Code अपडेट करें</button>
+
+<p class="notice">
+भुगतान करने से पहले UPI ऐप में प्राप्तकर्ता का नाम और राशि जाँच लें। भुगतान तभी पूरा माना जाएगा जब आपके बैंक/UPI ऐप में सफल स्थिति दिखे।
+</p>
+</section>
+
+<section class="card">
+<h2>पारदर्शिता</h2>
+<p>यह एक निजी व्यक्तिगत सहायता अपील है। यह किसी सरकार या सरकारी योजना का अभियान नहीं है और किसी संस्था की ओर से प्रायोजित नहीं है।</p>
+<p>मेरा उद्देश्य लागू कर और वैध देनदारियाँ चुकाने के बाद बची सहायता राशि से अपना निजी कर्ज़ चुकाना है।</p>
+<p><small>सहायता स्वीकार करने और उसका उपयोग करने में लागू बैंकिंग, कर और अन्य कानूनी नियमों का पालन किया जाएगा।</small></p>
+</section>
+
+<section class="card">
+<h2>मेरी एक और इच्छा</h2>
+<p>यदि निजी कर्ज़, लागू कर और सभी वैध देनदारियाँ चुकाने के बाद सहायता राशि में से कुछ बचता है, तो मैं उस बची हुई राशि से गरीब और जरूरतमंद लोगों को अपने हाथों से भोजन कराना चाहता हूँ।</p>
+<p>मेरा प्रयास रहेगा कि जरूरतमंद लोगों के चेहरे पर भी मुस्कान ला सकूँ। इस कार्य का हिसाब भी पारदर्शी रखने का प्रयास करूँगा।</p>
+</section>
+
+<section class="card">
+<h2>अपील शेयर करें</h2>
+<button onclick="sharePage()">अपील शेयर करें</button>
+</section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const upiId = "9992894530@yapl";
+
+function getPaymentLink(){
+ const amount = Number(document.getElementById("amount").value);
+ if(!Number.isFinite(amount) || amount < 1 || !Number.isInteger(amount)){
+   alert("कृपया ₹1 या उससे अधिक की पूरी राशि डालें।");
+   return null;
+ }
+ return "upi://pay?pa=" + encodeURIComponent(upiId) +
+        "&am=" + amount +
+        "&cu=INR&tn=" + encodeURIComponent("ONE RUPEE ONE HOPE");
+}
+
+function generateQR(){
+ const link = getPaymentLink();
+ if(!link) return;
+
+ const box = document.getElementById("qrcode");
+ box.innerHTML = "";
+
+ if(typeof QRCode === "undefined"){
+   box.innerHTML = "QR सुविधा के लिए इंटरनेट कनेक्शन आवश्यक है।";
+   return;
+ }
+
+ new QRCode(box,{
+   text:link,
+   width:220,
+   height:220,
+   correctLevel:QRCode.CorrectLevel.M
+ });
+}
+
+function payNow(){
+ const link = getPaymentLink();
+ if(link) window.location.href = link;
+}
+
+function sharePage(){
+ const data={
+   title:"ONE RUPEE – ONE HOPE",
+   text:"एक रुपया, एक उम्मीद। एक निजी सहायता अपील। सहायता पूरी तरह स्वैच्छिक है।",
+   url:location.href
+ };
+ if(navigator.share){
+   navigator.share(data).catch(()=>{});
+ }else{
+   navigator.clipboard.writeText(location.href)
+   .then(()=>alert("लिंक कॉपी हो गया।"))
+   .catch(()=>alert("ब्राउज़र से लिंक कॉपी करें।"));
+ }
+}
+
+window.addEventListener("load",generateQR);
+</script>
+<footer style="text-align:center;padding:25px;font-size:20px;font-weight:bold">आप सभी का भाई ❤️<br>ONE RUPEE – ONE HOPE</footer>
+</body>
+</html>
