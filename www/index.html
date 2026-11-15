@@ -83,21 +83,34 @@ small{color:#65756b;line-height:1.7}
 
 <!-- PUBLIC LEDGER START -->
 <section class="card" id="public-ledger">
-<h2>📊 सार्वजनिक हिसाब-किताब</h2>
-<p>ONE RUPEE – ONE HOPE | पारदर्शिता हमारा संकल्प</p>
-<div style="overflow-x:auto;">
-<table style="width:100%;border-collapse:collapse;text-align:center;">
-<thead><tr style="background:#14532d;color:white;">
-<th style="padding:12px;border:1px solid #ddd;">विवरण</th>
-<th style="padding:12px;border:1px solid #ddd;">राशि (₹)</th>
-</tr></thead>
-<tbody>
-<tr><td style="padding:12px;border:1px solid #ddd;">कुल सत्यापित सहायता प्राप्त</td><td style="padding:12px;border:1px solid #ddd;">₹0</td></tr>
-<tr><td style="padding:12px;border:1px solid #ddd;">कुल सत्यापित खर्च</td><td style="padding:12px;border:1px solid #ddd;">₹0</td></tr>
-<tr style="background:#e8f5e9;font-weight:bold;"><td style="padding:12px;border:1px solid #ddd;">उपलब्ध शेष राशि</td><td style="padding:12px;border:1px solid #ddd;">₹0</td></tr>
-</tbody></table></div>
-<p style="font-size:13px;color:#555;">नोट: ये शुरुआती आंकड़े हैं। वास्तविक बैंक/UPI रिकॉर्ड और खर्च की रसीदों से पुष्टि के बाद ही हिसाब अपडेट होगा।</p>
-<p style="font-size:13px;color:#555;">Aadhaar नंबर, पहचान-पत्र, निजी पता और बैंक विवरण सार्वजनिक नहीं किए जाएँगे।</p>
+  <h2>📊 सार्वजनिक हिसाब-किताब | Public Ledger</h2>
+  <p>ONE RUPEE – ONE HOPE | पारदर्शिता हमारा संकल्प</p>
+  <div style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;text-align:center;">
+      <tbody>
+        <tr><td style="padding:12px;border:1px solid #ddd;">कुल सत्यापित सहायता प्राप्त</td><td id="ledger-income" style="padding:12px;border:1px solid #ddd;">₹0.00</td></tr>
+        <tr><td style="padding:12px;border:1px solid #ddd;">कुल सत्यापित खर्च</td><td id="ledger-expense" style="padding:12px;border:1px solid #ddd;">₹0.00</td></tr>
+        <tr style="background:#e8f5e9;font-weight:bold;"><td style="padding:12px;border:1px solid #ddd;">उपलब्ध शेष राशि</td><td id="ledger-balance" style="padding:12px;border:1px solid #ddd;">₹0.00</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>सत्यापित रिकॉर्ड</h3>
+  <div style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;">
+      <thead><tr style="background:#14532d;color:white;">
+        <th style="padding:9px;border:1px solid #ddd;">तारीख</th>
+        <th style="padding:9px;border:1px solid #ddd;">प्रकार</th>
+        <th style="padding:9px;border:1px solid #ddd;">विवरण</th>
+        <th style="padding:9px;border:1px solid #ddd;">राशि</th>
+        <th style="padding:9px;border:1px solid #ddd;">रसीद/फोटो</th>
+      </tr></thead>
+      <tbody id="ledger-rows"><tr><td colspan="5" style="padding:12px;">हिसाब लोड हो रहा है...</td></tr></tbody>
+    </table>
+  </div>
+  <p id="ledger-status" style="font-size:13px;color:#555;">सिर्फ सत्यापित और सार्वजनिक रूप से स्वीकृत रिकॉर्ड दिखेंगे।</p>
+  <button type="button" id="ledger-download" style="padding:12px 18px;background:#14532d;color:white;border:0;border-radius:6px;">📥 Excel रिपोर्ट डाउनलोड करें</button>
+  <p style="font-size:13px;color:#555;">नोट: रिकॉर्ड वास्तविक बैंक/UPI प्रमाण और खर्च की रसीद जाँचने के बाद ही प्रकाशित करें।</p>
+  <p style="font-size:13px;color:#555;">Aadhaar नंबर, पहचान-पत्र, निजी पता और बैंक विवरण सार्वजनिक नहीं किए जाएँगे।</p>
 </section>
 <!-- PUBLIC LEDGER END -->
 
@@ -197,5 +210,123 @@ function sharePage(){
 window.addEventListener("load",generateQR);
 </script>
 <footer style="text-align:center;padding:25px;font-size:20px;font-weight:bold">आप सभी का भाई ❤️<br>ONE RUPEE – ONE HOPE</footer>
+
+<!-- LEDGER DATA SCRIPT -->
+<script>
+(function () {
+  "use strict";
+  const money = n => "₹" + Number(n || 0).toLocaleString("en-IN", {
+    minimumFractionDigits: 2, maximumFractionDigits: 2
+  });
+  let visibleRecords = [];
+
+  function cell(row, value) {
+    const td = document.createElement("td");
+    td.style.cssText = "padding:9px;border:1px solid #ddd;";
+    td.textContent = value == null ? "" : String(value);
+    row.appendChild(td);
+    return td;
+  }
+
+  async function loadLedger() {
+    const body = document.getElementById("ledger-rows");
+    const status = document.getElementById("ledger-status");
+    try {
+      const response = await fetch("ledger-data.json", {cache:"no-store"});
+      if (!response.ok) throw new Error("Ledger data not available");
+      const data = await response.json();
+      if (!Array.isArray(data.records)) throw new Error("Invalid ledger format");
+
+      visibleRecords = data.records.filter(r =>
+        r && r.verified === true && r.publicApproved === true &&
+        ["donation","expense"].includes(r.kind) &&
+        Number.isFinite(Number(r.amount)) && Number(r.amount) > 0 &&
+        typeof r.description === "string" &&
+        /^\d{4}-\d{2}-\d{2}$/.test(r.date || "")
+      );
+
+      let income = 0, expense = 0;
+      body.replaceChildren();
+
+      visibleRecords.forEach(r => {
+        const amount = Number(r.amount);
+        if (r.kind === "donation") income += amount;
+        else expense += amount;
+
+        const tr = document.createElement("tr");
+        cell(tr, r.date);
+        cell(tr, r.kind === "donation" ? "दान" : "खर्च");
+        cell(tr, r.description);
+        cell(tr, money(amount));
+
+        const proofCell = cell(tr, "");
+        if (typeof r.proofUrl === "string" &&
+            (r.proofUrl.startsWith("https://") || r.proofUrl.startsWith("/"))) {
+          const link = document.createElement("a");
+          link.href = r.proofUrl;
+          link.textContent = "देखें";
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          proofCell.appendChild(link);
+        } else {
+          proofCell.textContent = "उपलब्ध नहीं";
+        }
+        body.appendChild(tr);
+      });
+
+      if (!visibleRecords.length) {
+        const tr = document.createElement("tr");
+        const td = cell(tr, "अभी कोई सत्यापित सार्वजनिक रिकॉर्ड उपलब्ध नहीं है।");
+        td.colSpan = 5;
+        body.appendChild(tr);
+      }
+
+      document.getElementById("ledger-income").textContent = money(income);
+      document.getElementById("ledger-expense").textContent = money(expense);
+      document.getElementById("ledger-balance").textContent = money(income - expense);
+      status.textContent = "कुल " + visibleRecords.length + " सत्यापित सार्वजनिक रिकॉर्ड।";
+    } catch (error) {
+      body.replaceChildren();
+      const tr = document.createElement("tr");
+      const td = cell(tr, "हिसाब लोड नहीं हो सका। कृपया बाद में देखें।");
+      td.colSpan = 5;
+      body.appendChild(tr);
+      status.textContent = "Ledger data उपलब्ध नहीं है।";
+      console.error(error);
+    }
+  }
+
+  function downloadCSV() {
+    const rows = [["Date","Type","Description","Amount INR","Receipt URL"]];
+    visibleRecords.forEach(r => rows.push([
+      r.date,
+      r.kind === "donation" ? "Donation" : "Expense",
+      r.description,
+      Number(r.amount).toFixed(2),
+      r.proofUrl || ""
+    ]));
+    const csv = "\uFEFF" + rows.map(row =>
+      row.map(value => '"' + String(value).replace(/"/g, '""') + '"').join(",")
+    ).join("\r\n");
+    const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "one-rupee-one-hope-ledger.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const button = document.getElementById("ledger-download");
+    if (button) button.addEventListener("click", downloadCSV);
+    loadLedger();
+  });
+})();
+</script>
+<!-- LEDGER DATA SCRIPT END -->
+
 </body>
 </html>
