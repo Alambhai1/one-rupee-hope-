@@ -101,10 +101,11 @@ small{color:#65756b;line-height:1.7}
         <th style="padding:9px;border:1px solid #ddd;">तारीख</th>
         <th style="padding:9px;border:1px solid #ddd;">प्रकार</th>
         <th style="padding:9px;border:1px solid #ddd;">विवरण</th>
+        <th style="padding:9px;border:1px solid #ddd;">दानदाता</th>
         <th style="padding:9px;border:1px solid #ddd;">राशि</th>
         <th style="padding:9px;border:1px solid #ddd;">रसीद/फोटो</th>
       </tr></thead>
-      <tbody id="ledger-rows"><tr><td colspan="5" style="padding:12px;">हिसाब लोड हो रहा है...</td></tr></tbody>
+      <tbody id="ledger-rows"><tr><td colspan="6" style="padding:12px;">हिसाब लोड हो रहा है...</td></tr></tbody>
     </table>
   </div>
   <p id="ledger-status" style="font-size:13px;color:#555;">सिर्फ सत्यापित और सार्वजनिक रूप से स्वीकृत रिकॉर्ड दिखेंगे।</p>
@@ -257,6 +258,7 @@ window.addEventListener("load",generateQR);
         cell(tr, r.date);
         cell(tr, r.kind === "donation" ? "दान" : "खर्च");
         cell(tr, r.description);
+        cell(tr, r.kind === "donation" ? (r.anonymous === true || r.donorPublicConsent !== true ? "गुप्त दानदाता" : (typeof r.donorName === "string" && r.donorName.trim() ? r.donorName.trim() : "गुप्त दानदाता")) : "—");
         cell(tr, money(amount));
 
         const proofCell = cell(tr, "");
@@ -277,7 +279,7 @@ window.addEventListener("load",generateQR);
       if (!visibleRecords.length) {
         const tr = document.createElement("tr");
         const td = cell(tr, "अभी कोई सत्यापित सार्वजनिक रिकॉर्ड उपलब्ध नहीं है।");
-        td.colSpan = 5;
+        td.colSpan = 6;
         body.appendChild(tr);
       }
 
@@ -289,7 +291,7 @@ window.addEventListener("load",generateQR);
       body.replaceChildren();
       const tr = document.createElement("tr");
       const td = cell(tr, "हिसाब लोड नहीं हो सका। कृपया बाद में देखें।");
-      td.colSpan = 5;
+      td.colSpan = 6;
       body.appendChild(tr);
       status.textContent = "Ledger data उपलब्ध नहीं है।";
       console.error(error);
@@ -297,11 +299,12 @@ window.addEventListener("load",generateQR);
   }
 
   function downloadCSV() {
-    const rows = [["Date","Type","Description","Amount INR","Receipt URL"]];
+    const rows = [["Date","Type","Description","Donor","Amount INR","Receipt URL"]];
     visibleRecords.forEach(r => rows.push([
       r.date,
       r.kind === "donation" ? "Donation" : "Expense",
       r.description,
+      r.kind === "donation" ? (r.anonymous === true || r.donorPublicConsent !== true ? "गुप्त दानदाता" : (r.donorName || "गुप्त दानदाता")) : "—",
       Number(r.amount).toFixed(2),
       r.proofUrl || ""
     ]));
