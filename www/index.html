@@ -41,6 +41,19 @@ body { top:0 !important; }
 .goog-te-banner-frame {
  display:none !important;
 }
+
+/* OUR MISSION AND WORLD MAP STYLE */
+#our-mission{overflow:hidden}
+.mission-layout{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center}
+.mission-kicker{font-size:12px;font-weight:850;letter-spacing:2px;color:#a0782e!important}
+#our-mission h2{margin-bottom:12px}
+.mission-points{padding-left:22px;margin:14px 0}
+.mission-points li{padding:5px 0;color:#405466}
+.world-visual{text-align:center;padding:10px}
+.world-visual svg{display:block;width:100%;height:auto}
+.world-visual p{font-weight:800;color:#176b4b!important}
+@media(max-width:680px){.mission-layout{grid-template-columns:1fr;gap:10px}.world-visual{padding:0}}
+
 </style>
 
 
@@ -147,6 +160,44 @@ a{color:var(--green2)}
 <p>एक रुपया, एक उम्मीद</p>
 <p>जरूरतमंद व्यक्तियों और परिवारों की सहायता के लिए</p>
 </header>
+
+<!-- OUR MISSION AND WORLD MAP -->
+<section class="card" id="our-mission">
+  <div class="mission-layout">
+    <div>
+      <p class="mission-kicker">OUR PURPOSE · हमारा उद्देश्य</p>
+      <h2>हमारा मिशन | Our Mission</h2>
+      <p>हमारा उद्देश्य आर्थिक कठिनाइयों का सामना कर रहे व्यक्तियों और परिवारों तक सम्मान, संवेदना और पारदर्शिता के साथ सहायता पहुँचाने का प्रयास करना है।</p>
+      <p>छोटी-सी मदद भी किसी के जीवन में उम्मीद जगा सकती है। सहायता उपलब्ध सत्यापित धन और स्पष्ट नियमों के आधार पर की जाएगी।</p>
+      <ul class="mission-points">
+        <li><strong>सम्मान:</strong> किसी की मजबूरी का सार्वजनिक प्रदर्शन नहीं।</li>
+        <li><strong>पारदर्शिता:</strong> केवल सत्यापित दान और खर्च का रिकॉर्ड।</li>
+        <li><strong>इंसानियत:</strong> भाषा, देश और पहचान से ऊपर मानवता।</li>
+      </ul>
+    </div>
+    <div class="world-visual">
+      <svg viewBox="0 0 520 310" role="img" aria-label="दुनिया का प्रतीकात्मक नक्शा">
+        <rect x="8" y="8" width="504" height="294" rx="24" fill="#e5f3ed"/>
+        <g fill="#176b4b" stroke="#fff" stroke-width="3">
+          <path d="M75 82l28-25 43-8 25 15 34 4 16 22-18 16-8 25-24 9-10 27-20 8-13-22-21-7-8-28-24-9-12-27z"/>
+          <path d="M170 169l28 9 18 26-7 35-18 36-18-16-7-39-15-23z"/>
+          <path d="M245 76l24-17 39 2 17 14 32-2 22 16-9 21-29 7-17 22-26-6-18 17-26-12-22-25 4-22z"/>
+          <path d="M269 155l29-9 26 18 12 37-16 50-22 28-19-22-13-47-13-24z"/>
+          <path d="M365 184l30-13 36 10 23 23-12 25-33 8-29-18-20-17z"/>
+          <path d="M410 75l23-12 27 10 7 20-19 15-27-7z"/>
+        </g>
+        <g fill="none" stroke="#d6ad55" stroke-width="3" stroke-dasharray="5 7">
+          <path d="M120 112Q245 20 385 111"/>
+          <path d="M195 213Q290 280 405 208"/>
+        </g>
+        <text x="260" y="286" text-anchor="middle" font-size="16" font-weight="bold" fill="#174d48">ONE WORLD · ONE HUMANITY · ONE HOPE</text>
+      </svg>
+      <p>🌍 एक दुनिया, एक इंसानियत</p>
+    </div>
+  </div>
+</section>
+<!-- END OUR MISSION AND WORLD MAP -->
+
 
 <section class="card">
 <h2>हमारी विनम्र अपील</h2>
